@@ -15,20 +15,24 @@ body {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
     overflow: hidden;
+    flex-direction: column; /* Cambia a columna para dispositivos móviles */
+    width: 90%;
+    max-width: 400px; /* Limita el tamaño en pantallas grandes */
 }
 
 .event-panel {
     background-color: #ff6f61;
     color: white;
     padding: 20px;
-    width: 300px;
+    width: 100%; /* Ajusta al ancho disponible */
     display: flex;
     flex-direction: column;
 }
 
 .event-panel h2 {
     margin: 0 0 10px;
-    font-size: 20px;
+    font-size: 18px;
+    text-align: center;
 }
 
 .event-panel textarea {
@@ -57,7 +61,7 @@ body {
 
 .calendar {
     padding: 20px;
-    width: 400px;
+    width: 100%; /* Ajusta al ancho disponible */
 }
 
 .calendar-header {
@@ -74,6 +78,7 @@ body {
     padding: 5px 10px;
     border-radius: 5px;
     cursor: pointer;
+    font-size: 12px; /* Reduce el tamaño en pantallas pequeñas */
 }
 
 .calendar-header button:hover {
@@ -86,10 +91,11 @@ body {
     margin-bottom: 10px;
     font-weight: bold;
     text-align: center;
+    font-size: 12px; /* Tamaño reducido */
 }
 
 .calendar-weekdays div {
-    font-size: 12px; /* Tamaño reducido */
+    font-size: 10px; /* Ajusta el tamaño */
 }
 
 .calendar-days {
@@ -105,6 +111,7 @@ body {
     background-color: #f9f9f9;
     cursor: pointer;
     border-radius: 5px;
+    font-size: 12px; /* Reduce el tamaño del texto */
 }
 
 .day:hover {
@@ -124,4 +131,37 @@ body {
     font-weight: bold;
     text-align: left;
     margin-bottom: 10px;
+}
+
+/* Media queries para dispositivos pequeños */
+@media (max-width: 768px) {
+    .calendar-header {
+        flex-direction: column; /* Apila los elementos en columnas */
+        gap: 5px;
+    }
+
+    .calendar-weekdays {
+        font-size: 10px;
+    }
+
+    .calendar-days {
+        gap: 3px; /* Reduce el espacio entre días */
+    }
+
+    .day {
+        padding: 8px; /* Reduce el espacio */
+        font-size: 10px;
+    }
+
+    .event-panel h2 {
+        font-size: 16px; /* Ajusta el tamaño del título */
+    }
+
+    .event-panel textarea {
+        font-size: 12px;
+    }
+
+    .event-panel button {
+        font-size: 12px;
+    }
 }
