@@ -3,11 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module">
+        // Firebase configuration
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.7/firebase-app.js";
+        import { getFirestore, collection, doc, setDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBAXBjOiQShaIGxiqLEz7uUurKncZHd5J4",
+            authDomain: "calendariolocales.firebaseapp.com",
+            projectId: "calendariolocales",
+            storageBucket: "calendariolocales.firebasestorage.app",
+            messagingSenderId: "633639201976",
+            appId: "1:633639201976:web:dcd33e99a941950a5a584d",
+            measurementId: "G-XVC3TYTTEP"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Firestore functions
+        async function saveEventToFirebase(date, info) {
+            await setDoc(doc(db, "events", date), { info });
+        }
+
+        async function loadEvents() {
+            const querySnapshot = await getDocs(collection(db, "events"));
+            const events = {};
+            querySnapshot.forEach((doc) => {
+                events[doc.id] = doc.data().info;
+            });
+            return events;
+        }
+
+        window.firebaseUtils = { saveEventToFirebase, loadEvents }; // Hacer funciones accesibles globalmente
+    </script>
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
     <title>Calendario Interactivo</title>
 </head>
 <body>
+    <!-- Calendario interactivo -->
     <div class="container">
         <div class="event-panel">
             <h2 id="selected-date">Selecciona una fecha</h2>
@@ -16,9 +51,9 @@
         </div>
         <div class="calendar">
             <div class="calendar-header">
-                <div class="year-display" id="current-year">2024</div>
-                <button id="prev-month">&#9664; Mes</button>
                 <h3 id="current-month">Marzo</h3>
+                <div id="current-year">2024</div>
+                <button id="prev-month">&#9664; Mes</button>
                 <button id="next-month">Mes &#9654;</button>
             </div>
             <div class="calendar-weekdays">
@@ -31,102 +66,11 @@
                 <div>Domingo</div>
             </div>
             <div class="calendar-days" id="calendar-days">
-                <!-- Days will be dynamically generated -->
+                <!-- Aquí se generarán los días dinámicamente -->
             </div>
         </div>
     </div>
-
-    <script>
-        const calendarDays = document.getElementById('calendar-days');
-        const currentMonthEl = document.getElementById('current-month');
-        const currentYearEl = document.getElementById('current-year');
-        const selectedDateEl = document.getElementById('selected-date');
-        const eventInfoEl = document.getElementById('event-info');
-        const saveEventBtn = document.getElementById('save-event');
-        const prevMonthBtn = document.getElementById('prev-month');
-        const nextMonthBtn = document.getElementById('next-month');
-
-        let currentDate = new Date();
-        let selectedDate = null;
-        const events = JSON.parse(localStorage.getItem('events')) || {};
-
-        function renderCalendar() {
-            calendarDays.innerHTML = '';
-            const year = currentDate.getFullYear();
-            const month = currentDate.getMonth();
-
-            currentMonthEl.textContent = currentDate.toLocaleDateString('es-ES', {
-                month: 'long',
-            }).replace(/\b\w/, char => char.toUpperCase());
-
-            currentYearEl.textContent = year;
-
-            const firstDay = new Date(year, month, 1).getDay();
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-            const offset = (firstDay === 0 ? 6 : firstDay - 1);
-
-            for (let i = 0; i < offset; i++) {
-                const emptyCell = document.createElement('div');
-                calendarDays.appendChild(emptyCell);
-            }
-
-            for (let day = 1; day <= daysInMonth; day++) {
-                const dayEl = document.createElement('div');
-                dayEl.textContent = day;
-                dayEl.classList.add('day');
-                const fullDate = `${year}-${month + 1}-${day}`;
-                dayEl.dataset.date = fullDate;
-
-                if (events[fullDate]) {
-                    dayEl.classList.add('has-event');
-                }
-
-                dayEl.addEventListener('click', () => selectDate(fullDate));
-                calendarDays.appendChild(dayEl);
-            }
-        }
-
-        function selectDate(date) {
-            selectedDate = date;
-            selectedDateEl.textContent = `Evento: ${date}`;
-            eventInfoEl.value = events[date] || '';
-
-            document.querySelectorAll('.day').forEach(el => el.classList.remove('selected'));
-            document.querySelector(`[data-date='${date}']`).classList.add('selected');
-        }
-
-        saveEventBtn.addEventListener('click', () => {
-            if (!selectedDate) {
-                alert('Por favor, selecciona un día primero.');
-                return;
-            }
-
-            const info = eventInfoEl.value;
-            if (info) {
-                events[selectedDate] = info;
-                localStorage.setItem('events', JSON.stringify(events));
-                alert('Evento guardado correctamente.');
-                document.querySelector(`[data-date='${selectedDate}']`).classList.add('has-event');
-            } else {
-                delete events[selectedDate];
-                localStorage.setItem('events', JSON.stringify(events));
-                document.querySelector(`[data-date='${selectedDate}']`).classList.remove('has-event');
-                alert('Evento eliminado.');
-            }
-        });
-
-        prevMonthBtn.addEventListener('click', () => {
-            currentDate.setMonth(currentDate.getMonth() - 1);
-            renderCalendar();
-        });
-
-        nextMonthBtn.addEventListener('click', () => {
-            currentDate.setMonth(currentDate.getMonth() + 1);
-            renderCalendar();
-        });
-
-        renderCalendar();
-    </script>
+    <script src="scripts.js"></script>
 </body>
 </html>
+
